@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Garage WOD</title>
+<title>WODshed</title>
 <meta name="description" content="Garage gym workout generator with progressive overload tracking.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0d1b2a">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Garage WOD">
+<meta name="apple-mobile-web-app-title" content="WODshed">
 <style>html,body{margin:0; background:#0d1b2a;}</style>
 </head>
 <body>
@@ -264,6 +264,19 @@
     border-radius:4px; text-align:center; padding:8px; font-size:12px;
   }
   .gw-rate-options .gw-btn.gw-primary{background:var(--surface-2); border-color:var(--coral); color:var(--coral);}
+
+  #gw-session{display:flex; flex-direction:column; gap:16px;}
+  .gw-session-progress{
+    font-family:var(--font-display); font-weight:900; font-size:16px; color:#fff; text-transform:uppercase;
+  }
+  .gw-session-bar-track{width:100%; height:6px; background:var(--surface); border-radius:3px; overflow:hidden; margin-top:-8px;}
+  .gw-session-bar-fill{height:100%; background:var(--coral); border-radius:3px; transition:width 0.3s ease;}
+  #gw-actions-session{display:flex; flex-direction:column; gap:12px;}
+  .gw-session-nav{display:flex; gap:10px; margin-top:4px;}
+  .gw-session-nav .gw-btn{width:100%; padding:18px;}
+  .gw-session-bottom-row{display:flex; gap:10px; justify-content:space-between; margin-top:4px;}
+  .gw-session-bottom-row .gw-btn{flex:1;}
+
   #gw-log-content, #gw-profile-content{
     background:transparent; padding:0; margin-bottom:20px;
   }
@@ -391,6 +404,7 @@
     <div id="gw-coachnotes"></div>
     <div id="gw-board"></div>
     <div id="gw-actions"></div>
+    <div id="gw-session" style="display:none;"></div>
   </div>
 
   <div id="gw-page-log" class="gw-page" style="display:none;">
@@ -459,6 +473,7 @@ if(!window.storage){
 
 // Phosphor Icons "arrows-clockwise" (regular weight) — used for every reroll/refresh action
 const ICON_REFRESH = '<svg viewBox="0 0 256 256" fill="currentColor" width="16" height="16"><path d="M224,48V96a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h28.69L182.06,73.37a79.56,79.56,0,0,0-56.13-23.43h-.45A79.52,79.52,0,0,0,69.59,72.71,8,8,0,0,1,58.41,61.27a96,96,0,0,1,135,.79L208,76.69V48a8,8,0,0,1,16,0ZM186.41,183.29a80,80,0,0,1-112.47-.66L59.31,168H88a8,8,0,0,0,0-16H40a8,8,0,0,0-8,8v48a8,8,0,0,0,16,0V179.31l14.63,14.63A95.43,95.43,0,0,0,130,222.06h.53a95.36,95.36,0,0,0,67.07-27.33,8,8,0,0,0-11.18-11.44Z"/></svg>';
+const ICON_PLAY = '<svg viewBox="0 0 256 256" fill="currentColor" width="18" height="18"><path d="M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z"/></svg>';
 
 const DAY_TYPES = [
   {key:'strength', label:'Strength'},
@@ -528,9 +543,9 @@ const SKILLS = {
     {text:"GYMNASTIC\nEMOM 12'\n6-10 Toes to Bar"}
   ],
   weightlifting: [
-    {text:"LPO - COMPLEX (main bar)\n5 sets, each 2 min:\n1 Power Clean + 1 Front Squat + 1 Push Jerk", liftKey:'powerClean'},
-    {text:"LPO - SNATCH\n5 sets: 1 Snatch Deadlift + 1 Hang Power Snatch\nEach 2 min", liftKey:'powerSnatch'},
-    {text:"LPO - SNATCH\n6 sets x 3\nEach 2 min, progressive load", liftKey:'powerSnatch'}
+    {text:"OLYMPIC LIFTING - COMPLEX (main bar)\n5 sets, each 2 min:\n1 Power Clean + 1 Front Squat + 1 Push Jerk", liftKey:'powerClean'},
+    {text:"OLYMPIC LIFTING - SNATCH\n5 sets: 1 Snatch Deadlift + 1 Hang Power Snatch\nEach 2 min", liftKey:'powerSnatch'},
+    {text:"OLYMPIC LIFTING - SNATCH\n6 sets x 3\nEach 2 min, progressive load", liftKey:'powerSnatch'}
   ],
   accessory: [
     {text:"ACCESSORY (W-bar + KB)\n4 sets:\n10 W-bar curls\n10 W-bar skull crushers\n10/10 single arm KB row\nRest 1'"},
@@ -540,7 +555,7 @@ const SKILLS = {
   ],
   conditioning: [
     {text:"ENDURANCE\nEMOM 8'\nOdd: 10 KB swings\nEven: 8 burpees"},
-    {text:"ENDURANCE\n4 sets: 100 single unders + max effort burpees\nRest 1' between"},
+    {text:"ENDURANCE\n4 sets: 100 single unders + max effort burpees\nRest 1' between sets"},
     {text:"ENDURANCE\nEMOM 10'\nOdd: 12 KB swings\nEven: 10 jumping lunges"}
   ]
 };
@@ -564,7 +579,7 @@ const SKILLS_BW = {
   ],
   conditioning: [
     {text:"ENDURANCE (bodyweight)\nEMOM 8'\nOdd: 10 jump squats\nEven: 8 burpees"},
-    {text:"ENDURANCE (bodyweight)\n4 sets: 30 high knees + max effort burpees\nRest 1' between"},
+    {text:"ENDURANCE (bodyweight)\n4 sets: 30 high knees + max effort burpees\nRest 1' between sets"},
     {text:"ENDURANCE (bodyweight)\nEMOM 10'\nOdd: 12 mountain climbers\nEven: 10 jumping lunges"}
   ]
 };
@@ -684,16 +699,33 @@ function fmtBenchmarkScore(benchmark, score){
 }
 
 const CORE = [
-  "3 rds\n20 sit-ups\n20 flutter kicks\n30\" plank hold\nRest 30\"",
-  "Tabata 20\"/10\" x8\n1- Hollow hold\n2- Arch hold (alternate rounds)",
-  "3 rds\n15 V-ups\n15 Russian twists (add a plate if handy)\nRest 30\"",
-  "3 rds\n1' plank hold\n1' rest",
-  "2' accumulate plank hold",
-  "20 leg raises\n20 flutter kicks\n20 mountain climbers",
-  "3 rds\n30\" side plank each side\n10 superman"
+  {text:"3 rds\n20 sit-ups\n20 flutter kicks\n30\" plank hold\nRest 30\"", timer:{kind:'COUNTDOWN', minutes:0.5}},
+  {text:"Tabata 20\"/10\" x8\n1- Hollow hold\n2- Arch hold (alternate rounds)", timer:{kind:'TABATA', workSec:20, restSec:10, rounds:8}},
+  {text:"3 rds\n15 V-ups\n15 Russian twists (add a plate if you have one)\nRest 30\"", timer:{kind:'COUNTDOWN', minutes:0.5}},
+  {text:"3 rds\n1' plank hold\n1' rest", timer:{kind:'COUNTDOWN', minutes:1}},
+  {text:"2' accumulate plank hold", timer:{kind:'COUNTDOWN', minutes:2}},
+  {text:"20 leg raises\n20 flutter kicks\n20 mountain climbers", timer:null},
+  {text:"3 rds\n30\" side plank each side\n10 superman", timer:{kind:'COUNTDOWN', minutes:0.5}}
 ];
 
 // ---------- EXERCISE GLOSSARY ----------
+// Explains the workout format abbreviations (AMRAP, RFT, EMOM, etc.) — shown as clickable "FORMAT:" links
+const FORMAT_INFO = {
+  'AMRAP': "AMRAP = As Many Rounds (or Reps) As Possible. Complete as many full rounds of the listed movements as you can before time runs out. Your score is the number of rounds you completed, plus any extra reps into the next round.",
+  'RFT': "RFT = Rounds For Time. Complete the prescribed number of rounds as fast as you can. Your score is the total time it took to finish every round. The clock just counts up — it can't tell how many rounds you've done, so keep count yourself.",
+  'EMOM': "EMOM = Every Minute On the Minute. At the start of each minute, perform the prescribed work, then rest for whatever time is left before the next minute begins. Repeat for the total number of minutes listed.",
+  'FOR TIME': "For Time = complete all the prescribed work as fast as you can. Your score is the total time it took to finish (or how far you got, if you hit the time cap).",
+  'TABATA': "Tabata = short, intense work/rest intervals — classically 20 seconds of work, 10 seconds of rest — repeated for a set number of rounds.",
+};
+function findKnownFormats(text){
+  const found = [];
+  Object.keys(FORMAT_INFO).forEach(key=>{
+    const re = new RegExp(key.replace(' ', '\\s+'), 'i');
+    if(re.test(text) && !found.includes(key)) found.push(key);
+  });
+  return found;
+}
+
 const EXERCISE_INFO = {
   "KB Swings": {desc: "Hinge at the hips (not a squat) and hike the kettlebell back between your legs, then snap your hips forward to drive it up to chest/eye height. Arms stay relaxed — the hips do the work."},
   "Pull-Ups": {desc: "Hang from the bar with an overhand grip, pull your chin over the bar, then lower under control. Kip or use a band if you can't do strict reps yet.", url: "https://www.crossfit.com/essentials/the-kipping-pull-up"},
@@ -854,6 +886,8 @@ let state = {
   logFilterDate: null,
   showActivityForm: false,
   benchmarks: {},
+  sessionMode: false,
+  sessionStepIndex: 0,
   loaded: false
 };
 
@@ -1016,12 +1050,15 @@ function generateWorkout(type){
     }
   }
 
-  let core = null;
-  if(!(alloc && alloc.skipCore)) core = pickLRU(CORE, type, h=>h.core);
+  let core = null, coreTimer = null;
+  if(!(alloc && alloc.skipCore)){
+    core = pickLRU(CORE.map(c=>c.text), type, h=>h.core);
+    coreTimer = CORE.find(c=>c.text===core).timer;
+  }
 
   state.currentWorkout = {
     type, warmup, skillTplText, skillLiftKey, suggestedLoad, deload,
-    format, wodMovements, movements: wodMovements.map(m=>m.name), core, rpe: null, wodRpe: null, bw,
+    format, wodMovements, movements: wodMovements.map(m=>m.name), core, coreTimer, rpe: null, wodRpe: null, bw,
     volumeUsed: effectiveVolume, coachNotes, isBenchmark, benchmarkName,
     sectionsDone: {warmup:true, skill:true, core:true}, wodPerformance: {}
   };
@@ -1057,6 +1094,104 @@ function formatPerformance(perf){
 
 function fmtDate(d){ return new Date(d).toLocaleDateString(undefined,{month:'short', day:'numeric', year:'numeric'}); }
 
+function buildSkillLoadRow(w){
+  if(!w.skillLiftKey) return null;
+  const row = document.createElement('div');
+  row.className = 'gw-load-row';
+  row.innerHTML = `<label>${LIFT_LABELS[w.skillLiftKey]} load (lb)</label>`;
+  const input = document.createElement('input');
+  input.type = 'number'; input.step = '5'; input.value = w.suggestedLoad;
+  input.oninput = ()=>{ w.suggestedLoad = Number(input.value)||0; plates.textContent = plateBreakdown(w.suggestedLoad); };
+  row.appendChild(input);
+  const plates = document.createElement('div');
+  plates.className = 'gw-plates';
+  plates.textContent = plateBreakdown(w.suggestedLoad);
+  row.appendChild(plates);
+  if(w.deload){
+    const note = document.createElement('div');
+    note.className = 'gw-plates'; note.style.color = 'var(--danger)';
+    note.textContent = 'Last two sessions on this lift were rated Hard — suggested weight backs off ~10%.';
+    row.appendChild(note);
+  }
+  return row;
+}
+
+// builds the DOM node for one section (warmup/skill/wod/core); returns null if that section isn't part of today's workout
+function renderSectionNode(key, w, opts){
+  opts = opts || {};
+  if(key==='warmup'){
+    if(!w.warmup) return null;
+    const node = sectionWithChips('Warm-Up', w.warmup, DAY_TYPES.find(d=>d.key===w.type).label, {
+      onReroll: opts.simple ? null : ()=>rerollSection('warmup'), onRemove: opts.simple ? null : ()=>removeSection('warmup')
+    });
+    node.finalize();
+    return node;
+  }
+  if(key==='skill'){
+    if(!w.skillTplText) return null;
+    const node = sectionWithChips('Skill', w.skillTplText, w.deload ? 'DELOAD' : (w.bw ? 'TRAVEL' : ''), {
+      onReroll: opts.simple ? null : ()=>rerollSection('skill'), onRemove: opts.simple ? null : ()=>removeSection('skill')
+    });
+    const loadRow = buildSkillLoadRow(w);
+    if(loadRow) node.bodyEl.appendChild(loadRow);
+    node.finalize();
+    return node;
+  }
+  if(key==='wod'){
+    return renderWodSection(w);
+  }
+  if(key==='core'){
+    if(!w.core) return null;
+    const node = sectionWithChips('Extra Core', w.core, '', {
+      onReroll: opts.simple ? null : ()=>rerollSection('core'), onRemove: opts.simple ? null : ()=>removeSection('core')
+    });
+    node.finalize(w.coreTimer);
+    return node;
+  }
+  return null;
+}
+
+function buildRateBlock(labelText, currentVal, onPick){
+  const block = document.createElement('div');
+  block.className = 'gw-rate-block';
+  const lbl = document.createElement('div');
+  lbl.className = 'gw-rate-label';
+  lbl.textContent = labelText;
+  block.appendChild(lbl);
+  const optsRow = document.createElement('div');
+  optsRow.className = 'gw-rate-options';
+  ['easy','right','hard'].forEach(r=>{
+    const b = mkBtn(RPE_LABELS[r], currentVal===r ? 'gw-primary' : 'gw-btn', ()=>onPick(r));
+    optsRow.appendChild(b);
+  });
+  block.appendChild(optsRow);
+  return block;
+}
+
+// builds the rating blocks + Log & Save button; used by both the normal view and the session-mode "rate" step
+function renderRatingAndLogBlock(container, w, onChange){
+  if(w.skillLiftKey){
+    container.appendChild(buildRateBlock(
+      'How did ' + LIFT_LABELS[w.skillLiftKey] + ' feel?',
+      w.rpe, (r)=>{ w.rpe = r; onChange(); }
+    ));
+  }
+  container.appendChild(buildRateBlock('How did the WOD feel?', w.wodRpe, (r)=>{ w.wodRpe = r; onChange(); }));
+
+  const logBtn = mkBtn('Log & Save to History', 'gw-teal', ()=>logWorkout());
+  const missingRating = (w.skillLiftKey && !w.rpe) || !w.wodRpe;
+  logBtn.disabled = missingRating;
+  container.appendChild(logBtn);
+  if(missingRating){
+    const hint = document.createElement('div');
+    hint.style.cssText = 'width:100%; font-size:11.5px; color:var(--muted); text-align:center; font-weight:700;';
+    hint.textContent = w.skillLiftKey && !w.rpe && !w.wodRpe
+      ? "Rate the lift and the WOD above to save this session."
+      : (w.skillLiftKey && !w.rpe ? "Rate the lift above to save this session." : "Rate the WOD above to save this session.");
+    container.appendChild(hint);
+  }
+}
+
 function render(){
   const rec = recommendedFocus();
   const focusLine = document.getElementById('gw-focusline');
@@ -1074,13 +1209,18 @@ function render(){
     b.title = rec && rec.type===dt.key
       ? (rec.days===null ? "Recommended — you haven't trained this focus yet" : `Recommended today — last trained ${rec.days} day${rec.days===1?'':'s'} ago`)
       : '';
-    b.onclick = ()=>{ generateWorkout(dt.key); };
+    b.onclick = ()=>{ state.sessionMode = false; generateWorkout(dt.key); };
     tabs.appendChild(b);
   });
 
   const board = document.getElementById('gw-board');
   const actions = document.getElementById('gw-actions');
+  const session = document.getElementById('gw-session');
   const w = state.currentWorkout;
+
+  session.style.display = 'none';
+  board.style.display = '';
+  actions.style.display = '';
 
   if(!w){
     const rec = recommendedFocus();
@@ -1094,93 +1234,105 @@ function render(){
     return;
   }
 
+  if(state.sessionMode){ renderSessionStep(); return; }
+
   board.innerHTML = '';
   renderCoachNotes(w.coachNotes);
-  if(w.warmup){
-    const warmupNode = sectionWithChips('Warm-Up', w.warmup, DAY_TYPES.find(d=>d.key===w.type).label, {
-      onReroll: ()=>rerollSection('warmup'), onRemove: ()=>removeSection('warmup')
-    });
-    warmupNode.finalize();
-    board.appendChild(warmupNode);
-  }
-
-  if(w.skillTplText){
-    const skillNode = sectionWithChips('Skill', w.skillTplText, w.deload ? 'DELOAD' : (w.bw ? 'TRAVEL' : ''), {
-      onReroll: ()=>rerollSection('skill'), onRemove: ()=>removeSection('skill')
-    });
-    if(w.skillLiftKey){
-      const row = document.createElement('div');
-      row.className = 'gw-load-row';
-      row.innerHTML = `<label>${LIFT_LABELS[w.skillLiftKey]} load (lb)</label>`;
-      const input = document.createElement('input');
-      input.type = 'number'; input.step = '5'; input.value = w.suggestedLoad;
-      input.oninput = ()=>{ w.suggestedLoad = Number(input.value)||0; plates.textContent = plateBreakdown(w.suggestedLoad); };
-      row.appendChild(input);
-      const plates = document.createElement('div');
-      plates.className = 'gw-plates';
-      plates.textContent = plateBreakdown(w.suggestedLoad);
-      row.appendChild(plates);
-      skillNode.bodyEl.appendChild(row);
-      if(w.deload){
-        const note = document.createElement('div');
-        note.className = 'gw-plates'; note.style.color = 'var(--danger)';
-        note.textContent = 'Last two sessions on this lift were rated Hard — suggested weight backs off ~10%.';
-        skillNode.bodyEl.appendChild(note);
-      }
-    }
-    skillNode.finalize();
-    board.appendChild(skillNode);
-  }
-
-  board.appendChild(renderWodSection(w));
-  if(w.core){
-    const coreNode = sectionWithChips('Extra Core', w.core, '', {
-      onReroll: ()=>rerollSection('core'), onRemove: ()=>removeSection('core')
-    });
-    coreNode.finalize();
-    board.appendChild(coreNode);
-  }
+  ['warmup','skill','wod','core'].forEach(key=>{
+    const node = renderSectionNode(key, w, {});
+    if(node) board.appendChild(node);
+  });
 
   actions.innerHTML = '';
+  const startBtn = mkBtn('Start Workout', 'gw-primary', startWorkoutSession, ICON_PLAY);
+  startBtn.style.width = '100%';
+  actions.appendChild(startBtn);
+  const startHint = document.createElement('div');
+  startHint.style.cssText = 'width:100%; font-size:11.5px; color:var(--muted); text-align:center; font-weight:700; margin-top:-6px;';
+  startHint.textContent = 'Switches to a focused, one-section-at-a-time view.';
+  actions.appendChild(startHint);
+
   actions.appendChild(mkBtn('Refresh Workout', 'gw-btn', ()=>generateWorkout(w.type), ICON_REFRESH));
+  renderRatingAndLogBlock(actions, w, render);
+}
 
-  function buildRateBlock(labelText, currentVal, onPick){
-    const block = document.createElement('div');
-    block.className = 'gw-rate-block';
-    const lbl = document.createElement('div');
-    lbl.className = 'gw-rate-label';
-    lbl.textContent = labelText;
-    block.appendChild(lbl);
-    const optsRow = document.createElement('div');
-    optsRow.className = 'gw-rate-options';
-    ['easy','right','hard'].forEach(r=>{
-      const b = mkBtn(RPE_LABELS[r], currentVal===r ? 'gw-primary' : 'gw-btn', ()=>onPick(r));
-      optsRow.appendChild(b);
-    });
-    block.appendChild(optsRow);
-    return block;
+function getSessionSteps(w){
+  const steps = [];
+  if(w.warmup) steps.push('warmup');
+  if(w.skillTplText) steps.push('skill');
+  steps.push('wod');
+  if(w.core) steps.push('core');
+  steps.push('rate');
+  return steps;
+}
+function startWorkoutSession(){
+  if(!state.currentWorkout) return;
+  state.sessionMode = true;
+  state.sessionStepIndex = 0;
+  render();
+}
+function exitWorkoutSession(){
+  state.sessionMode = false;
+  render();
+}
+function renderSessionStep(){
+  const w = state.currentWorkout;
+  if(!w){ exitWorkoutSession(); return; }
+  const steps = getSessionSteps(w);
+  if(state.sessionStepIndex >= steps.length) state.sessionStepIndex = steps.length-1;
+  if(state.sessionStepIndex < 0) state.sessionStepIndex = 0;
+  const currentStep = steps[state.sessionStepIndex];
+
+  document.getElementById('gw-board').style.display = 'none';
+  document.getElementById('gw-actions').style.display = 'none';
+  const session = document.getElementById('gw-session');
+  session.style.display = '';
+  session.innerHTML = '';
+
+  const progress = document.createElement('div');
+  progress.className = 'gw-session-progress';
+  const stepLabel = currentStep==='rate' ? 'Rate & Save' : SECTION_LABELS[currentStep];
+  progress.textContent = `Step ${state.sessionStepIndex+1} of ${steps.length} — ${stepLabel}`;
+  session.appendChild(progress);
+
+  const barTrack = document.createElement('div');
+  barTrack.className = 'gw-session-bar-track';
+  const barFill = document.createElement('div');
+  barFill.className = 'gw-session-bar-fill';
+  barFill.style.width = `${Math.round(((state.sessionStepIndex)/(steps.length-1||1))*100)}%`;
+  barTrack.appendChild(barFill);
+  session.appendChild(barTrack);
+
+  if(currentStep==='rate'){
+    const rateWrap = document.createElement('div');
+    rateWrap.id = 'gw-actions-session';
+    renderRatingAndLogBlock(rateWrap, w, renderSessionStep);
+    session.appendChild(rateWrap);
+  } else {
+    const node = renderSectionNode(currentStep, w, {simple:false});
+    if(node) session.appendChild(node);
+
+    const navRow = document.createElement('div');
+    navRow.className = 'gw-session-nav';
+    const doneLabel = currentStep==='wod' ? 'Mark WOD Complete & Continue' : 'Mark Complete & Continue';
+    navRow.appendChild(mkBtn(doneLabel, 'gw-teal', ()=>{
+      if(!w.sectionsDone) w.sectionsDone = {};
+      w.sectionsDone[currentStep] = true;
+      state.sessionStepIndex++;
+      renderSessionStep();
+    }));
+    session.appendChild(navRow);
   }
 
-  if(w.skillLiftKey){
-    actions.appendChild(buildRateBlock(
-      'How did ' + LIFT_LABELS[w.skillLiftKey] + ' feel?',
-      w.rpe, (r)=>{ w.rpe = r; render(); }
-    ));
+  const bottomRow = document.createElement('div');
+  bottomRow.className = 'gw-session-bottom-row';
+  if(state.sessionStepIndex > 0){
+    const backBtn = mkBtn('← Back', 'gw-btn', ()=>{ state.sessionStepIndex--; renderSessionStep(); });
+    bottomRow.appendChild(backBtn);
   }
-  actions.appendChild(buildRateBlock('How did the WOD feel?', w.wodRpe, (r)=>{ w.wodRpe = r; render(); }));
-
-  const logBtn = mkBtn('Log & Save to History', 'gw-teal', ()=>logWorkout());
-  const missingRating = (w.skillLiftKey && !w.rpe) || !w.wodRpe;
-  logBtn.disabled = missingRating;
-  actions.appendChild(logBtn);
-  if(missingRating){
-    const hint = document.createElement('div');
-    hint.style.cssText = 'width:100%; font-size:11.5px; color:var(--muted); text-align:center; font-weight:700;';
-    hint.textContent = w.skillLiftKey && !w.rpe && !w.wodRpe
-      ? "Rate the lift and the WOD above to save this session."
-      : (w.skillLiftKey && !w.rpe ? "Rate the lift above to save this session." : "Rate the WOD above to save this session.");
-    actions.appendChild(hint);
-  }
+  const exitBtn = mkBtn('Exit Focused Mode', 'gw-btn', exitWorkoutSession);
+  bottomRow.appendChild(exitBtn);
+  session.appendChild(bottomRow);
 }
 
 function splitHeadline(body){
@@ -1192,7 +1344,24 @@ function splitHeadline(body){
   return {headline: first.replace(/:$/,''), detail: rest};
 }
 
-function appendInfoAndTimer(bodyEl, fullText, timerSpec, timerLabel){
+function appendInfoAndTimer(bodyEl, fullText, timerSpec, timerLabel, sectionKey){
+  const knownFormats = findKnownFormats(fullText);
+  if(knownFormats.length){
+    const fmtRow = document.createElement('div');
+    fmtRow.className = 'gw-info-links';
+    const fmtLabel = document.createElement('span');
+    fmtLabel.className = 'gw-info-label';
+    fmtLabel.textContent = 'FORMAT:';
+    fmtRow.appendChild(fmtLabel);
+    knownFormats.forEach(key=>{
+      const link = document.createElement('span');
+      link.className = 'gw-info-link';
+      link.textContent = key;
+      link.onclick = ()=>showModal(key, FORMAT_INFO[key]);
+      fmtRow.appendChild(link);
+    });
+    bodyEl.appendChild(fmtRow);
+  }
   const known = findKnownMovements(fullText);
   if(known.length){
     const info = document.createElement('div');
@@ -1214,7 +1383,7 @@ function appendInfoAndTimer(bodyEl, fullText, timerSpec, timerLabel){
     const tBtn = document.createElement('button');
     tBtn.className = 'gw-timer-full';
     tBtn.textContent = 'START TIMER';
-    tBtn.onclick = ()=>openTimer(timerSpec, timerLabel, fullText);
+    tBtn.onclick = ()=>openTimer(timerSpec, timerLabel, fullText, sectionKey);
     bodyEl.appendChild(tBtn);
   }
 }
@@ -1227,7 +1396,9 @@ function sectionWithChips(title, body, tag, opts){
   head.className = 'gw-section-head';
   const titleWrap = document.createElement('span');
   titleWrap.className = 'gw-section-title';
-  titleWrap.textContent = title;
+  const sectionKeyForTitle = {'Warm-Up':'warmup', 'Skill':'skill', 'Extra Core':'core'}[title] || null;
+  const isDone = sectionKeyForTitle && state.currentWorkout && state.currentWorkout.sectionsDone && state.currentWorkout.sectionsDone[sectionKeyForTitle] === true;
+  titleWrap.textContent = (isDone ? '✓ ' : '') + title;
   head.appendChild(titleWrap);
 
   const rightWrap = document.createElement('span');
@@ -1276,9 +1447,10 @@ function sectionWithChips(title, body, tag, opts){
 
   wrap.appendChild(head); wrap.appendChild(bodyEl);
   wrap.bodyEl = bodyEl;
-  wrap.finalize = ()=>{
-    const timerSpec = parseTimerFromText(body);
-    appendInfoAndTimer(bodyEl, body, timerSpec, title.toUpperCase() + (timerSpec ? ' — ' + timerSpec.kind : ''));
+  wrap.finalize = (overrideSpec)=>{
+    const timerSpec = overrideSpec !== undefined ? overrideSpec : parseTimerFromText(body);
+    const sectionKey = {'Warm-Up':'warmup', 'Skill':'skill', 'Extra Core':'core'}[title] || null;
+    appendInfoAndTimer(bodyEl, body, timerSpec, title.toUpperCase() + (timerSpec ? ' — ' + timerSpec.kind : ''), sectionKey);
   };
   return wrap;
 }
@@ -1291,7 +1463,8 @@ function renderWodSection(w){
   head.className = 'gw-section-head';
   const titleWrap = document.createElement('span');
   titleWrap.className = 'gw-section-title';
-  titleWrap.textContent = 'WOD';
+  const wodDone = w.sectionsDone && w.sectionsDone.wod === true;
+  titleWrap.textContent = (wodDone ? '✓ ' : '') + 'WOD';
   head.appendChild(titleWrap);
 
   const rightWrap = document.createElement('span');
@@ -1343,7 +1516,7 @@ function renderWodSection(w){
 
   const timerSpec = parseTimerFromText(w.wodText);
   addWodPerformanceUI(bodyEl, w, timerSpec);
-  appendInfoAndTimer(bodyEl, w.wodText, timerSpec, 'WOD' + (timerSpec ? ' — ' + timerSpec.kind : ''));
+  appendInfoAndTimer(bodyEl, w.wodText, timerSpec, 'WOD' + (timerSpec ? ' — ' + timerSpec.kind : ''), 'wod');
   return wrap;
 }
 
@@ -1381,9 +1554,10 @@ function rerollSection(section){
     w.wodRpe = null;
     w.wodPerformance = {};
   } else if(section==='core'){
-    let choice = w.core;
-    if(CORE.length>1){ do{ choice = CORE[Math.floor(Math.random()*CORE.length)]; } while(choice===w.core); }
-    w.core = choice;
+    let choice = CORE.find(c=>c.text===w.core) || CORE[0];
+    if(CORE.length>1){ do{ choice = CORE[Math.floor(Math.random()*CORE.length)]; } while(choice.text===w.core); }
+    w.core = choice.text;
+    w.coreTimer = choice.timer;
   }
   render();
 }
@@ -2018,13 +2192,16 @@ function parseTimerFromText(text){
   if(/FOR TIME/i.test(text)) return {kind:'FORTIME', cap:null};
   if(m = text.match(/(\d+)\s*RFT/i)){
     const capM = text.match(/time cap\s+(\d+)'/i);
-    return {kind:'RFT', cap: capM ? Number(capM[1]) : null};
+    return {kind:'RFT', cap: capM ? Number(capM[1]) : null, rounds: Number(m[1])};
   }
   if(m = text.match(/(\d+)'\s*accumulate/i) || (m = text.match(/accumulate\s+(\d+)'/i))){
     return {kind:'COUNTDOWN', minutes:Number(m[1])};
   }
-  if(m = text.match(/each\s+(\d+)\s*min/i)) return {kind:'INTERVAL', minutes:Number(m[1])};
-  if(m = text.match(/rest\s+(\d+)\s*sec/i)) return {kind:'INTERVAL', minutes:Number(m[1])/60};
+  // "5 x 5" / "4 x 8-10" etc — used to bound the rest-interval timer below at the right number of sets
+  const setCountMatch = text.match(/(\d+)\s*x\s*\d+/i);
+  const setCount = setCountMatch ? Number(setCountMatch[1]) : null;
+  if(m = text.match(/each\s+(\d+)\s*min/i)) return {kind:'INTERVAL', minutes:Number(m[1]), totalRounds:setCount};
+  if(m = text.match(/rest\s+(\d+)\s*sec/i)) return {kind:'INTERVAL', minutes:Number(m[1])/60, totalRounds:setCount};
   return null;
 }
 
@@ -2036,8 +2213,8 @@ function fmtClock(totalSeconds){
   return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
 }
 
-function openTimer(spec, label, contextText){
-  timer = { ...spec, running:false, startedAt:null, elapsedBefore:0, lastBeepUnit:-1, lastPhaseKey:null, lastTickSecond:null, doneBeeped:false };
+function openTimer(spec, label, contextText, sectionKey){
+  timer = { ...spec, running:false, startedAt:null, elapsedBefore:0, lastBeepUnit:-1, lastPhaseKey:null, lastTickSecond:null, doneBeeped:false, sectionKey: sectionKey || null };
   document.getElementById('gw-timer-label').textContent = label || spec.kind;
   document.getElementById('gw-timer-sub').textContent = timerSubLabel();
   const phaseEl = document.getElementById('gw-timer-phase');
@@ -2051,6 +2228,7 @@ function openTimer(spec, label, contextText){
     ctxBox.classList.remove('show');
   }
   updateTimerDisplay();
+  updateTimerButtonStates();
   document.getElementById('gw-timer-backdrop').classList.add('show');
 }
 function timerSubLabel(){
@@ -2062,10 +2240,26 @@ function timerSubLabel(){
   if(timer.kind==='INTERVAL'){
     const totalSec = Math.round(timer.minutes*60);
     const label = totalSec < 60 ? `${totalSec} sec` : `${timer.minutes} min`;
-    return `Repeats every ${label} — beeps each round, stop when done`;
+    return timer.totalRounds
+      ? `${timer.totalRounds} sets, ${label} rest between — stops automatically after set ${timer.totalRounds}`
+      : `Repeats every ${label} — beeps each round, stop when done`;
   }
-  if(timer.kind==='FORTIME' || timer.kind==='RFT') return timer.cap ? `Counts up — time cap ${timer.cap}'` : 'Counts up — stop when you finish';
+  if(timer.kind==='FORTIME' || timer.kind==='RFT'){
+    const roundsPart = timer.rounds ? `Complete ${timer.rounds} rounds — ` : '';
+    return timer.cap ? `${roundsPart}counts up, time cap ${timer.cap}'` : `${roundsPart}counts up — stop when you finish (you track rounds)`;
+  }
   return timer.cap ? `Counts up — time cap ${timer.cap}'` : 'Stopwatch';
+}
+const SECTION_LABELS = {warmup:'Warm-Up', skill:'Skill', wod:'WOD', core:'Extra Core'};
+function markTimerSectionComplete(){
+  if(!timer || !timer.sectionKey) return;
+  const w = state.currentWorkout;
+  if(!w) return;
+  if(!w.sectionsDone) w.sectionsDone = {};
+  const already = w.sectionsDone[timer.sectionKey] === true;
+  w.sectionsDone[timer.sectionKey] = true;
+  if(!already) toast(`✓ ${SECTION_LABELS[timer.sectionKey] || timer.sectionKey} marked complete.`);
+  if(state.sessionMode) renderSessionStep(); else render();
 }
 function currentElapsed(){
   if(!timer) return 0;
@@ -2098,14 +2292,27 @@ function updateTimerDisplay(){
 
   } else if(timer.kind==='INTERVAL'){
     const cycle = timer.minutes*60;
-    const unit = Math.floor(elapsed/cycle);
-    const withinUnit = elapsed - unit*cycle;
-    displaySeconds = cycle - withinUnit;
-    if(displaySeconds===cycle) displaySeconds=0;
-    document.getElementById('gw-timer-sub').textContent = `Round ${unit+1} — beeps each time it resets`;
-    if(unit > timer.lastBeepUnit && timer.running){ switchBeep(); timer.lastBeepUnit = unit; }
-    if(displaySeconds <= 3) warn = true;
-    maybeTick(displaySeconds);
+    if(timer.totalRounds){
+      const totalDuration = cycle*timer.totalRounds;
+      const clamped = Math.min(elapsed, totalDuration);
+      const unit = Math.floor(clamped/cycle);
+      const withinUnit = clamped - unit*cycle;
+      displaySeconds = cycle - withinUnit;
+      if(displaySeconds===cycle) displaySeconds=0;
+      document.getElementById('gw-timer-sub').textContent = `Rest after set ${Math.min(unit+1, timer.totalRounds)} of ${timer.totalRounds}`;
+      if(unit > timer.lastBeepUnit && unit < timer.totalRounds && timer.running){ switchBeep(); timer.lastBeepUnit = unit; }
+      if(elapsed >= totalDuration){ warn = true; finishIfNeeded(); displaySeconds = 0; }
+      else { if(displaySeconds <= 3) warn = true; maybeTick(displaySeconds); }
+    } else {
+      const unit = Math.floor(elapsed/cycle);
+      const withinUnit = elapsed - unit*cycle;
+      displaySeconds = cycle - withinUnit;
+      if(displaySeconds===cycle) displaySeconds=0;
+      document.getElementById('gw-timer-sub').textContent = `Round ${unit+1} — beeps each time it resets`;
+      if(unit > timer.lastBeepUnit && timer.running){ switchBeep(); timer.lastBeepUnit = unit; }
+      if(displaySeconds <= 3) warn = true;
+      maybeTick(displaySeconds);
+    }
 
   } else if(timer.kind==='TABATA'){
     const cycle = timer.workSec + timer.restSec;
@@ -2145,6 +2352,8 @@ function finishIfNeeded(){
     timer.doneBeeped = true;
     timer.running = false;
     beepTriple();
+    updateTimerButtonStates();
+    markTimerSectionComplete();
   }
 }
 function timerTick(){
@@ -2153,6 +2362,28 @@ function timerTick(){
   timer.raf = requestAnimationFrame(timerTick);
 }
 
+function updateTimerButtonStates(){
+  if(!timer) return;
+  const startBtn = document.getElementById('gw-timer-start');
+  const pauseBtn = document.getElementById('gw-timer-pause');
+  const resetBtn = document.getElementById('gw-timer-reset');
+  const hasProgress = timer.running || timer.elapsedBefore > 0;
+  if(timer.running){
+    startBtn.style.display = 'none';
+    pauseBtn.style.display = '';
+    resetBtn.style.display = '';
+  } else if(hasProgress){
+    startBtn.style.display = '';
+    startBtn.textContent = 'Resume';
+    pauseBtn.style.display = 'none';
+    resetBtn.style.display = '';
+  } else {
+    startBtn.style.display = '';
+    startBtn.textContent = 'Start';
+    pauseBtn.style.display = 'none';
+    resetBtn.style.display = 'none';
+  }
+}
 document.getElementById('gw-timer-start').onclick = ()=>{
   if(!timer || timer.running) return;
   timer.running = true;
@@ -2160,6 +2391,7 @@ document.getElementById('gw-timer-start').onclick = ()=>{
   timer.doneBeeped = false;
   cancelAnimationFrame(timer.raf);
   timerTick();
+  updateTimerButtonStates();
 };
 document.getElementById('gw-timer-pause').onclick = ()=>{
   if(!timer || !timer.running) return;
@@ -2167,6 +2399,7 @@ document.getElementById('gw-timer-pause').onclick = ()=>{
   timer.running = false;
   cancelAnimationFrame(timer.raf);
   updateTimerDisplay();
+  updateTimerButtonStates();
 };
 document.getElementById('gw-timer-reset').onclick = ()=>{
   if(!timer) return;
@@ -2175,6 +2408,7 @@ document.getElementById('gw-timer-reset').onclick = ()=>{
   timer.lastBeepUnit = -1; timer.lastPhaseKey = null; timer.lastTickSecond = null; timer.doneBeeped = false;
   document.getElementById('gw-timer-sub').textContent = timerSubLabel();
   updateTimerDisplay();
+  updateTimerButtonStates();
 };
 document.getElementById('gw-timer-close').onclick = ()=>{
   if(timer){ cancelAnimationFrame(timer.raf); }
