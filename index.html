@@ -249,11 +249,24 @@
 
   #gw-actions{display:flex; flex-direction:column; gap:12px; margin-bottom:20px;}
   #gw-actions .gw-btn-row{width:100%;}
-  #gw-actions > .gw-btn:not(.gw-primary):not(.gw-teal){width:100%; display:flex; align-items:center; justify-content:center; gap:10px; border:1px solid var(--coral); color:var(--coral); background:none; padding:20px; font-family:var(--font-display); font-size:20px; font-weight:900;}
-  #gw-actions > .gw-btn:not(.gw-primary):not(.gw-teal):hover{background:rgba(255,107,107,0.08);}
+  #gw-actions > .gw-btn-hero{
+    width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
+    background:var(--coral); color:var(--bg); border:none; border-radius:12px;
+    padding:22px; font-family:var(--font-display); font-size:22px; font-weight:900;
+    box-shadow:0 10px 28px rgba(255,107,107,0.32);
+    margin-bottom:10px;
+  }
+  #gw-actions > .gw-btn-hero:hover{background:var(--coral-dark); box-shadow:0 10px 32px rgba(255,107,107,0.42);}
+  #gw-actions > .gw-btn-hero svg{width:24px; height:24px;}
+  #gw-actions > .gw-btn-secondary{
+    width:100%; display:flex; align-items:center; justify-content:center; gap:8px;
+    background:none; color:var(--muted); border:1px solid var(--line-strong); border-radius:10px;
+    padding:14px; font-family:var(--font-body); font-size:13px; font-weight:800; letter-spacing:0.02em;
+  }
+  #gw-actions > .gw-btn-secondary:hover{color:#fff; border-color:var(--coral);}
+  #gw-actions > .gw-btn-secondary svg{width:15px; height:15px;}
   .gw-btn-with-icon{display:inline-flex; align-items:center; gap:8px;}
   .gw-btn-with-icon svg{flex-shrink:0;}
-  #gw-actions > .gw-btn-with-icon svg{width:22px; height:22px;}
   .gw-icon-btn svg{width:16px; height:16px; display:block;}
   #gw-actions .gw-btn.gw-primary, #gw-actions .gw-btn.gw-teal{width:100%; padding:20px;}
   .gw-rate-block{background:var(--surface); border:1px solid var(--line-strong); border-radius:8px; padding:16px; width:100%;}
@@ -357,6 +370,71 @@
     font-size:11px; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted);
     margin-bottom:12px; display:block; font-weight:900; font-family:var(--font-body);
   }
+
+  /* ---- Focus Mode ---- */
+  #gw-focus{display:flex; flex-direction:column; gap:18px;}
+  .gw-focus-segments{display:flex; gap:6px;}
+  .gw-focus-segment{flex:1; height:6px; border-radius:3px; background:var(--surface); position:relative; overflow:hidden;}
+  .gw-focus-segment .gw-focus-segment-fill{position:absolute; inset:0; background:var(--coral); border-radius:3px; transform:scaleX(0); transform-origin:left; transition:transform 0.25s ease;}
+  .gw-focus-segment.done .gw-focus-segment-fill{transform:scaleX(1);}
+  .gw-focus-segment.active .gw-focus-segment-fill{transform:scaleX(1); animation:gw-pulse-seg 1.6s ease-in-out infinite;}
+  .gw-focus-segment.unavailable{background:var(--surface); opacity:0.35;}
+  @keyframes gw-pulse-seg{0%,100%{opacity:1;} 50%{opacity:0.55;}}
+  .gw-focus-labels{display:flex; gap:6px;}
+  .gw-focus-labels span{flex:1; text-align:center; font-size:9.5px; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; color:var(--muted); font-family:var(--font-body);}
+  .gw-focus-labels span.active{color:var(--coral);}
+
+  .gw-focus-headrow{display:flex; align-items:center; justify-content:space-between;}
+  .gw-focus-section-name{font-family:var(--font-display); font-weight:900; font-size:26px; color:#fff; text-transform:uppercase;}
+  .gw-focus-tag{font-size:10px; font-weight:900; letter-spacing:0.04em; color:var(--coral); text-transform:uppercase; background:var(--surface); border:1px solid var(--line-strong); padding:5px 10px; border-radius:999px;}
+
+  .gw-focus-detail{
+    background:var(--surface); border-radius:16px; padding:16px 18px; font-size:14px; color:var(--text);
+    line-height:1.6; white-space:pre-line; font-family:var(--font-body); font-weight:500;
+  }
+
+  .gw-focus-stage{
+    background:var(--surface); border-radius:20px; padding:28px 20px; display:flex; flex-direction:column; align-items:center;
+    gap:14px; transition:background 0.4s ease;
+  }
+  .gw-focus-stage.gw-focus-rest{background:#141c29;}
+  .gw-focus-phaseword{font-family:var(--font-display); font-weight:900; font-size:22px; text-transform:uppercase; color:var(--coral); min-height:28px; letter-spacing:0.02em;}
+  .gw-focus-phaseword.rest{color:var(--muted);}
+  .gw-focus-ringwrap{position:relative; width:230px; height:230px; display:flex; align-items:center; justify-content:center;}
+  .gw-focus-ringwrap svg{position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg);}
+  .gw-focus-ring-track{fill:none; stroke:var(--surface-2); stroke-width:10;}
+  .gw-focus-ring-fill{fill:none; stroke:var(--coral); stroke-width:10; stroke-linecap:round; transition:stroke-dashoffset 0.2s linear, stroke 0.3s ease;}
+  .gw-focus-ring-fill.rest{stroke:var(--muted);}
+  .gw-focus-number{font-family:var(--font-mono); font-weight:700; font-size:56px; color:#fff; z-index:1; letter-spacing:-0.02em;}
+  .gw-focus-number.rest{color:var(--muted);}
+  .gw-focus-number.warn{color:var(--danger);}
+  .gw-focus-subtext{font-size:13px; color:var(--muted); font-weight:600; text-align:center; min-height:18px;}
+  .gw-focus-taphint{font-size:11px; color:var(--coral); font-weight:800; text-transform:uppercase; letter-spacing:0.04em; text-align:center;}
+  .gw-focus-stage.gw-tap-target{cursor:pointer; -webkit-tap-highlight-color:transparent; user-select:none;}
+  .gw-focus-stage.gw-tap-flash{background:var(--coral-dark);}
+
+  .gw-focus-controls{display:flex; gap:10px; width:100%;}
+  .gw-focus-controls .gw-btn{flex:1; padding:16px; font-family:var(--font-display); font-size:18px;}
+  .gw-focus-controls .gw-btn:not(.gw-primary){background:var(--surface-2); border:1px solid var(--line); color:#fff; flex:none; width:88px;}
+
+  .gw-focus-nav{display:flex; gap:10px;}
+  .gw-focus-nav .gw-btn{flex:1; padding:18px;}
+  .gw-focus-exit{
+    text-align:center; font-size:12px; color:var(--muted); font-weight:700; text-decoration:underline;
+    cursor:pointer; padding:6px;
+  }
+  .gw-focus-exit:hover{color:var(--coral);}
+
+  #gw-stopconfirm-backdrop{
+    display:none; position:fixed; inset:0; background:rgba(13,27,42,0.85); z-index:180;
+    align-items:center; justify-content:center; padding:20px;
+  }
+  #gw-stopconfirm-backdrop.show{display:flex;}
+  #gw-stopconfirm{background:var(--surface); border-radius:16px; max-width:340px; width:100%; padding:24px;}
+  #gw-stopconfirm h4{margin:0 0 10px; color:#fff; font-size:20px; font-family:var(--font-display); font-weight:900; text-transform:uppercase;}
+  #gw-stopconfirm p{margin:0 0 18px; font-size:13.5px; line-height:1.55; color:var(--muted); font-family:var(--font-body);}
+  .gw-stopconfirm-row{display:flex; gap:10px;}
+  .gw-stopconfirm-row .gw-btn{flex:1; padding:14px; font-size:13px;}
 </style>
 
 <div id="gw-root">
@@ -392,6 +470,7 @@
     <div id="gw-coachnotes"></div>
     <div id="gw-board"></div>
     <div id="gw-actions"></div>
+    <div id="gw-focus" style="display:none;"></div>
   </div>
 
   <div id="gw-page-log" class="gw-page" style="display:none;">
@@ -421,6 +500,16 @@
   </div>
 </div>
 <div id="gw-toast"></div>
+<div id="gw-stopconfirm-backdrop">
+  <div id="gw-stopconfirm">
+    <h4>Stop the workout?</h4>
+    <p>You'll leave Focus Mode. Nothing you've done so far is lost — you can pick up where you left off from the normal view.</p>
+    <div class="gw-stopconfirm-row">
+      <button class="gw-btn" id="gw-stopconfirm-cancel">Keep Going</button>
+      <button class="gw-btn gw-primary" id="gw-stopconfirm-ok">Stop</button>
+    </div>
+  </div>
+</div>
 <div id="gw-modal-backdrop">
   <div id="gw-modal">
     <h4 id="gw-modal-title"></h4>
@@ -460,6 +549,9 @@ if(!window.storage){
 
 // Phosphor Icons "arrows-clockwise" (regular weight) — used for every reroll/refresh action
 const ICON_REFRESH = '<svg viewBox="0 0 256 256" fill="currentColor" width="16" height="16"><path d="M224,48V96a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h28.69L182.06,73.37a79.56,79.56,0,0,0-56.13-23.43h-.45A79.52,79.52,0,0,0,69.59,72.71,8,8,0,0,1,58.41,61.27a96,96,0,0,1,135,.79L208,76.69V48a8,8,0,0,1,16,0ZM186.41,183.29a80,80,0,0,1-112.47-.66L59.31,168H88a8,8,0,0,0,0-16H40a8,8,0,0,0-8,8v48a8,8,0,0,0,16,0V179.31l14.63,14.63A95.43,95.43,0,0,0,130,222.06h.53a95.36,95.36,0,0,0,67.07-27.33,8,8,0,0,0-11.18-11.44Z"/></svg>';
+const ICON_PLAY = '<svg viewBox="0 0 256 256" fill="currentColor" width="18" height="18"><path d="M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 256 256" fill="currentColor" width="18" height="18"><path d="M110,40H50A14,14,0,0,0,36,54V202a14,14,0,0,0,14,14h60a14,14,0,0,0,14-14V54A14,14,0,0,0,110,40Zm-2,160H52V56h56ZM206,40H146a14,14,0,0,0-14,14V202a14,14,0,0,0,14,14h60a14,14,0,0,0,14-14V54A14,14,0,0,0,206,40Zm-2,160H148V56h56Z"/></svg>';
+const ICON_X = '<svg viewBox="0 0 256 256" fill="currentColor" width="16" height="16"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg>';
 
 const DAY_TYPES = [
   {key:'strength', label:'Strength'},
@@ -872,6 +964,9 @@ let state = {
   logFilterDate: null,
   showActivityForm: false,
   benchmarks: {},
+  focusMode: false,
+  focusStepIndex: 0,
+  focusTapCount: 0,
   loaded: false
 };
 
@@ -1199,9 +1294,14 @@ function render(){
 
   const board = document.getElementById('gw-board');
   const actions = document.getElementById('gw-actions');
+  const focus = document.getElementById('gw-focus');
   const w = state.currentWorkout;
 
   if(!w){
+    state.focusMode = false;
+    focus.style.display = 'none';
+    board.style.display = '';
+    actions.style.display = '';
     const rec = recommendedFocus();
     board.innerHTML = `<div id="gw-empty">
       <div class="gw-display" style="font-size:15px; color:var(--muted);">READY FOR THE NEXT ONE</div>
@@ -1213,6 +1313,17 @@ function render(){
     return;
   }
 
+  if(state.focusMode){
+    board.style.display = 'none';
+    actions.style.display = 'none';
+    focus.style.display = '';
+    renderFocusStep();
+    return;
+  }
+  focus.style.display = 'none';
+  board.style.display = '';
+  actions.style.display = '';
+
   board.innerHTML = '';
   renderCoachNotes(w.coachNotes);
   ['warmup','skill','wod','core'].forEach(key=>{
@@ -1221,8 +1332,371 @@ function render(){
   });
 
   actions.innerHTML = '';
-  actions.appendChild(mkBtn('Refresh Workout', 'gw-btn', ()=>generateWorkout(w.type), ICON_REFRESH));
+  actions.appendChild(mkBtn('Start Workout', 'gw-btn-hero', ()=>startFocusMode(), ICON_PLAY));
+  actions.appendChild(mkBtn('Refresh Workout', 'gw-btn-secondary', ()=>generateWorkout(w.type), ICON_REFRESH));
   renderRatingAndLogBlock(actions, w, render);
+}
+
+// ---------- Focus Mode ----------
+function getFocusStepsData(w){
+  w.wodText = buildWodText(w.format, w.wodMovements);
+  const defs = [
+    {key:'warmup', label:'Warm-Up', text: w.warmup},
+    {key:'skill', label:'Skill', text: w.skillTplText},
+    {key:'wod', label:'WOD', text: w.wodText},
+    {key:'core', label:'Extra Core', text: w.core}
+  ];
+  return defs.map(d=>{
+    const available = !!d.text;
+    let timerSpec = null;
+    if(available) timerSpec = d.key==='core' ? w.coreTimer : parseTimerFromText(d.text);
+    return {...d, available, timerSpec};
+  });
+}
+function getFocusNavKeys(w){
+  return getFocusStepsData(w).filter(d=>d.available).map(d=>d.key).concat(['rate']);
+}
+function startFocusMode(){
+  if(!state.currentWorkout) return;
+  state.focusMode = true;
+  state.focusStepIndex = 0;
+  state.focusTapCount = 0;
+  render();
+}
+function requestExitFocus(){
+  focusStopTicking();
+  document.getElementById('gw-stopconfirm-backdrop').classList.add('show');
+}
+function cancelExitFocus(){
+  document.getElementById('gw-stopconfirm-backdrop').classList.remove('show');
+}
+function confirmExitFocus(){
+  document.getElementById('gw-stopconfirm-backdrop').classList.remove('show');
+  state.focusMode = false;
+  focusTimer = null;
+  render();
+}
+
+function renderFocusStep(){
+  const w = state.currentWorkout;
+  if(!w){ state.focusMode = false; render(); return; }
+  const allSteps = getFocusStepsData(w);
+  const navKeys = allSteps.filter(d=>d.available).map(d=>d.key).concat(['rate']);
+  if(state.focusStepIndex >= navKeys.length) state.focusStepIndex = navKeys.length-1;
+  if(state.focusStepIndex < 0) state.focusStepIndex = 0;
+  const currentKey = navKeys[state.focusStepIndex];
+  const currentNavPos = state.focusStepIndex;
+
+  const container = document.getElementById('gw-focus');
+  container.innerHTML = '';
+
+  // segmented progress bar — always 4 canonical segments, reinforcing WODshed's structure
+  const segRow = document.createElement('div');
+  segRow.className = 'gw-focus-segments';
+  const labelRow = document.createElement('div');
+  labelRow.className = 'gw-focus-labels';
+  allSteps.forEach(step=>{
+    const seg = document.createElement('div');
+    seg.className = 'gw-focus-segment';
+    const fill = document.createElement('div');
+    fill.className = 'gw-focus-segment-fill';
+    seg.appendChild(fill);
+    const stepNavPos = navKeys.indexOf(step.key);
+    if(!step.available) seg.classList.add('unavailable');
+    else if(step.key===currentKey) seg.classList.add('active');
+    else if(stepNavPos > -1 && stepNavPos < currentNavPos) seg.classList.add('done');
+    segRow.appendChild(seg);
+
+    const lbl = document.createElement('span');
+    lbl.textContent = step.label.replace('Warm-Up','WARM-UP').replace('Extra Core','CORE').toUpperCase();
+    if(step.key===currentKey) lbl.classList.add('active');
+    labelRow.appendChild(lbl);
+  });
+  container.appendChild(segRow);
+  container.appendChild(labelRow);
+
+  if(currentKey === 'rate'){
+    focusTimer = null;
+    const headRow = document.createElement('div');
+    headRow.className = 'gw-focus-headrow';
+    headRow.innerHTML = '<div class="gw-focus-section-name">Rate &amp; Save</div>';
+    container.appendChild(headRow);
+    const rateWrap = document.createElement('div');
+    rateWrap.style.cssText = 'display:flex; flex-direction:column; gap:12px;';
+    renderRatingAndLogBlock(rateWrap, w, renderFocusStep);
+    container.appendChild(rateWrap);
+  } else {
+    const stepData = allSteps.find(d=>d.key===currentKey);
+    const headRow = document.createElement('div');
+    headRow.className = 'gw-focus-headrow';
+    const nameEl = document.createElement('div');
+    nameEl.className = 'gw-focus-section-name';
+    nameEl.textContent = stepData.label;
+    headRow.appendChild(nameEl);
+    if(stepData.timerSpec){
+      const tag = document.createElement('div');
+      tag.className = 'gw-focus-tag';
+      tag.textContent = stepData.timerSpec.kind;
+      headRow.appendChild(tag);
+    }
+    container.appendChild(headRow);
+
+    const detail = document.createElement('div');
+    detail.className = 'gw-focus-detail';
+    detail.textContent = stepData.text;
+    container.appendChild(detail);
+
+    const stage = document.createElement('div');
+    stage.className = 'gw-focus-stage';
+    stage.id = 'gw-focus-stage';
+
+    if(stepData.timerSpec){
+      const phaseEl = document.createElement('div');
+      phaseEl.className = 'gw-focus-phaseword';
+      phaseEl.id = 'gw-focus-phase';
+      stage.appendChild(phaseEl);
+
+      const ringWrap = document.createElement('div');
+      ringWrap.className = 'gw-focus-ringwrap';
+      const circ = 2*Math.PI*105;
+      ringWrap.innerHTML = `<svg viewBox="0 0 240 240">
+          <circle class="gw-focus-ring-track" cx="120" cy="120" r="105"/>
+          <circle class="gw-focus-ring-fill" id="gw-focus-ring" cx="120" cy="120" r="105"
+            stroke-dasharray="${circ}" stroke-dashoffset="0"/>
+        </svg><div class="gw-focus-number" id="gw-focus-number">00:00</div>`;
+      stage.appendChild(ringWrap);
+
+      const subEl = document.createElement('div');
+      subEl.className = 'gw-focus-subtext';
+      subEl.id = 'gw-focus-sub';
+      stage.appendChild(subEl);
+
+      const controls = document.createElement('div');
+      controls.className = 'gw-focus-controls';
+      const startBtn = mkBtn('Start', 'gw-primary', focusStart); startBtn.id = 'gw-focus-start';
+      const pauseBtn = mkBtn('Pause', 'gw-btn', focusPause); pauseBtn.id = 'gw-focus-pause'; pauseBtn.style.display = 'none';
+      const resetBtn = mkBtn('Reset', 'gw-btn', focusReset); resetBtn.id = 'gw-focus-reset'; resetBtn.style.display = 'none';
+      controls.appendChild(startBtn); controls.appendChild(pauseBtn); controls.appendChild(resetBtn);
+      stage.appendChild(controls);
+      container.appendChild(stage);
+
+      focusOpenTimer(stepData.timerSpec);
+    } else {
+      focusTimer = null;
+      stage.classList.add('gw-tap-target');
+      const numberEl = document.createElement('div');
+      numberEl.className = 'gw-focus-number';
+      numberEl.id = 'gw-focus-number';
+      numberEl.textContent = state.focusTapCount;
+      stage.appendChild(numberEl);
+      const hint = document.createElement('div');
+      hint.className = 'gw-focus-taphint';
+      hint.textContent = 'Tap anywhere to count';
+      stage.appendChild(hint);
+      stage.onclick = ()=>{
+        state.focusTapCount++;
+        document.getElementById('gw-focus-number').textContent = state.focusTapCount;
+        stage.classList.add('gw-tap-flash');
+        setTimeout(()=>stage.classList.remove('gw-tap-flash'), 120);
+      };
+      container.appendChild(stage);
+    }
+
+    const navRow = document.createElement('div');
+    navRow.className = 'gw-focus-nav';
+    if(state.focusStepIndex > 0){
+      navRow.appendChild(mkBtn('← Back', 'gw-btn', ()=>{ focusStopTicking(); state.focusStepIndex--; state.focusTapCount = 0; renderFocusStep(); }));
+    }
+    navRow.appendChild(mkBtn('Continue →', 'gw-teal', ()=>{ focusStopTicking(); state.focusStepIndex++; state.focusTapCount = 0; renderFocusStep(); }));
+    container.appendChild(navRow);
+  }
+
+  const exitLink = document.createElement('div');
+  exitLink.className = 'gw-focus-exit';
+  exitLink.textContent = 'Stop Workout';
+  exitLink.onclick = requestExitFocus;
+  container.appendChild(exitLink);
+}
+
+// independent timer engine for Focus Mode (mirrors the modal's logic but keeps its own state,
+// so opening the section-timer modal separately never conflicts with an in-progress Focus Mode timer)
+let focusTimer = null;
+function focusCurrentElapsed(){
+  if(!focusTimer) return 0;
+  const running = focusTimer.running ? (performance.now() - focusTimer.startedAt)/1000 : 0;
+  return focusTimer.elapsedBefore + running;
+}
+function focusOpenTimer(spec){
+  focusTimer = { ...spec, running:false, startedAt:null, elapsedBefore:0, lastBeepUnit:-1, lastPhaseKey:null, lastTickSecond:null, doneBeeped:false };
+  focusUpdateDisplay();
+  focusUpdateButtonStates();
+}
+function focusMaybeTick(secondsRemaining){
+  if(!focusTimer || !focusTimer.running) return;
+  const whole = Math.ceil(secondsRemaining);
+  if(whole>=1 && whole<=3 && whole !== focusTimer.lastTickSecond){
+    tickBeep();
+    focusTimer.lastTickSecond = whole;
+  } else if(whole>3){
+    focusTimer.lastTickSecond = null;
+  }
+}
+function focusFinish(){
+  if(focusTimer && !focusTimer.doneBeeped){
+    focusTimer.doneBeeped = true;
+    focusTimer.running = false;
+    beepTriple();
+    focusUpdateButtonStates();
+  }
+}
+function focusTick(){
+  if(!focusTimer || !focusTimer.running) return;
+  focusUpdateDisplay();
+  focusTimer.raf = requestAnimationFrame(focusTick);
+}
+function focusStopTicking(){
+  if(focusTimer) cancelAnimationFrame(focusTimer.raf);
+}
+function focusStart(){
+  if(!focusTimer || focusTimer.running) return;
+  focusTimer.running = true;
+  focusTimer.startedAt = performance.now();
+  focusTimer.doneBeeped = false;
+  cancelAnimationFrame(focusTimer.raf);
+  focusTick();
+  focusUpdateButtonStates();
+}
+function focusPause(){
+  if(!focusTimer || !focusTimer.running) return;
+  focusTimer.elapsedBefore = focusCurrentElapsed();
+  focusTimer.running = false;
+  cancelAnimationFrame(focusTimer.raf);
+  focusUpdateDisplay();
+  focusUpdateButtonStates();
+}
+function focusReset(){
+  if(!focusTimer) return;
+  cancelAnimationFrame(focusTimer.raf);
+  focusTimer.running = false; focusTimer.startedAt = null; focusTimer.elapsedBefore = 0;
+  focusTimer.lastBeepUnit = -1; focusTimer.lastPhaseKey = null; focusTimer.lastTickSecond = null; focusTimer.doneBeeped = false;
+  focusUpdateDisplay();
+  focusUpdateButtonStates();
+}
+function focusUpdateButtonStates(){
+  if(!focusTimer) return;
+  const startBtn = document.getElementById('gw-focus-start');
+  const pauseBtn = document.getElementById('gw-focus-pause');
+  const resetBtn = document.getElementById('gw-focus-reset');
+  if(!startBtn) return;
+  const hasProgress = focusTimer.running || focusTimer.elapsedBefore > 0;
+  if(focusTimer.running){
+    startBtn.style.display = 'none'; pauseBtn.style.display = ''; resetBtn.style.display = '';
+  } else if(hasProgress){
+    startBtn.style.display = ''; startBtn.textContent = 'Resume'; pauseBtn.style.display = 'none'; resetBtn.style.display = '';
+  } else {
+    startBtn.style.display = ''; startBtn.textContent = 'Start'; pauseBtn.style.display = 'none'; resetBtn.style.display = 'none';
+  }
+}
+function focusUpdateDisplay(){
+  if(!focusTimer) return;
+  const numberEl = document.getElementById('gw-focus-number');
+  const subEl = document.getElementById('gw-focus-sub');
+  const phaseEl = document.getElementById('gw-focus-phase');
+  const ring = document.getElementById('gw-focus-ring');
+  const stage = document.getElementById('gw-focus-stage');
+  if(!numberEl) return;
+  const elapsed = focusCurrentElapsed();
+  const CIRC = 2*Math.PI*105;
+  let displaySeconds = 0, warn = false, fraction = 1, isRest = false;
+  function setRing(frac){ if(ring) ring.style.strokeDashoffset = String(CIRC * (1-Math.max(0,Math.min(1,frac)))); }
+
+  if(focusTimer.kind==='AMRAP' || focusTimer.kind==='COUNTDOWN'){
+    const total = focusTimer.minutes*60;
+    displaySeconds = total - elapsed;
+    if(displaySeconds<=0){ displaySeconds=0; warn=true; fraction=0; focusFinish(); }
+    else { if(displaySeconds<=10) warn=true; focusMaybeTick(displaySeconds); fraction = total>0 ? displaySeconds/total : 0; }
+    setRing(fraction);
+    subEl.textContent = focusTimer.kind==='AMRAP' ? `${focusTimer.minutes} min AMRAP — counts down` : `${focusTimer.minutes} min countdown`;
+
+  } else if(focusTimer.kind==='EMOM'){
+    const total = focusTimer.minutes*60;
+    const clamped = Math.min(elapsed, total);
+    const unit = Math.floor(clamped/60);
+    const withinMinute = clamped - unit*60;
+    displaySeconds = 60 - withinMinute;
+    if(displaySeconds===60) displaySeconds=0;
+    subEl.textContent = `Minute ${Math.min(unit+1, focusTimer.minutes)} of ${focusTimer.minutes}`;
+    if(unit > focusTimer.lastBeepUnit && unit < focusTimer.minutes && focusTimer.running){ switchBeep(); focusTimer.lastBeepUnit = unit; }
+    if(elapsed >= total){ warn=true; fraction=0; focusFinish(); displaySeconds=0; }
+    else { if(displaySeconds<=3) warn=true; focusMaybeTick(displaySeconds); fraction = displaySeconds/60; }
+    setRing(fraction);
+
+  } else if(focusTimer.kind==='INTERVAL'){
+    const cycle = focusTimer.minutes*60;
+    if(focusTimer.totalRounds){
+      const totalDuration = cycle*focusTimer.totalRounds;
+      const clamped = Math.min(elapsed, totalDuration);
+      const unit = Math.floor(clamped/cycle);
+      const withinUnit = clamped - unit*cycle;
+      displaySeconds = cycle - withinUnit;
+      if(displaySeconds===cycle) displaySeconds=0;
+      subEl.textContent = `Rest after set ${Math.min(unit+1, focusTimer.totalRounds)} of ${focusTimer.totalRounds}`;
+      if(unit > focusTimer.lastBeepUnit && unit < focusTimer.totalRounds && focusTimer.running){ switchBeep(); focusTimer.lastBeepUnit = unit; }
+      if(elapsed >= totalDuration){ warn=true; fraction=0; focusFinish(); displaySeconds=0; }
+      else { if(displaySeconds<=3) warn=true; focusMaybeTick(displaySeconds); fraction = displaySeconds/cycle; }
+    } else {
+      const unit = Math.floor(elapsed/cycle);
+      const withinUnit = elapsed - unit*cycle;
+      displaySeconds = cycle - withinUnit;
+      if(displaySeconds===cycle) displaySeconds=0;
+      subEl.textContent = `Round ${unit+1} — beeps each time it resets`;
+      if(unit > focusTimer.lastBeepUnit && focusTimer.running){ switchBeep(); focusTimer.lastBeepUnit = unit; }
+      if(displaySeconds<=3) warn=true;
+      focusMaybeTick(displaySeconds);
+      fraction = displaySeconds/cycle;
+    }
+    setRing(fraction);
+
+  } else if(focusTimer.kind==='TABATA'){
+    const cycle = focusTimer.workSec + focusTimer.restSec;
+    const totalDuration = cycle*focusTimer.rounds;
+    const clamped = Math.min(elapsed, totalDuration);
+    const roundIdx = Math.min(Math.floor(clamped/cycle), focusTimer.rounds-1);
+    const withinCycle = clamped - roundIdx*cycle;
+    isRest = withinCycle >= focusTimer.workSec;
+    const phaseSecTotal = isRest ? focusTimer.restSec : focusTimer.workSec;
+    const phaseElapsed = isRest ? withinCycle - focusTimer.workSec : withinCycle;
+    displaySeconds = phaseSecTotal - phaseElapsed;
+    if(displaySeconds===phaseSecTotal) displaySeconds = 0;
+    const phaseKey = roundIdx+'-'+(isRest?'rest':'work');
+    if(phaseKey !== focusTimer.lastPhaseKey && focusTimer.running){ switchBeep(); focusTimer.lastPhaseKey = phaseKey; }
+    phaseEl.textContent = isRest ? 'REST' : 'WORK';
+    phaseEl.classList.toggle('rest', isRest);
+    subEl.textContent = `Round ${roundIdx+1} of ${focusTimer.rounds}`;
+    if(elapsed >= totalDuration){ warn=true; fraction=0; focusFinish(); displaySeconds=0; }
+    else { if(displaySeconds<=3) warn=true; focusMaybeTick(displaySeconds); fraction = phaseSecTotal>0 ? displaySeconds/phaseSecTotal : 0; }
+    setRing(fraction);
+    if(stage) stage.classList.toggle('gw-focus-rest', isRest);
+    if(ring) ring.classList.toggle('rest', isRest);
+    numberEl.classList.toggle('rest', isRest);
+
+  } else { // FORTIME / RFT / stopwatch
+    displaySeconds = elapsed;
+    if(focusTimer.cap){
+      const capSec = focusTimer.cap*60;
+      fraction = Math.max(0, 1 - elapsed/capSec);
+      if(elapsed >= capSec) warn = true;
+    } else {
+      fraction = 1;
+    }
+    setRing(fraction);
+    const roundsPart = focusTimer.rounds ? `Complete ${focusTimer.rounds} rounds — you track them. ` : '';
+    subEl.textContent = focusTimer.cap ? `${roundsPart}Time cap ${focusTimer.cap}'` : (roundsPart || 'Counts up — stop when you finish');
+  }
+
+  if(phaseEl && focusTimer.kind!=='TABATA') phaseEl.textContent = '';
+  numberEl.textContent = fmtClock(displaySeconds);
+  numberEl.classList.toggle('warn', warn);
 }
 
 function splitHeadline(body){
@@ -1581,6 +2055,7 @@ async function logWorkout(){
     });
     await saveHistory();
     toast(prMessage || ('Logged. Next ' + DAY_TYPES.find(d=>d.key===w.type).label + ' session will build on this.'));
+    focusStopTicking();
     state.currentWorkout = null;
     document.getElementById('gw-timebanner').style.display = 'none';
     render();
@@ -2289,6 +2764,8 @@ document.getElementById('gw-timer-close').onclick = ()=>{
   if(timer){ cancelAnimationFrame(timer.raf); }
   document.getElementById('gw-timer-backdrop').classList.remove('show');
 };
+document.getElementById('gw-stopconfirm-cancel').onclick = cancelExitFocus;
+document.getElementById('gw-stopconfirm-ok').onclick = confirmExitFocus;
 
 loadState();
 })();
