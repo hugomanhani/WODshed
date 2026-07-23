@@ -265,18 +265,6 @@
   }
   .gw-rate-options .gw-btn.gw-primary{background:var(--surface-2); border-color:var(--coral); color:var(--coral);}
 
-  #gw-session{display:flex; flex-direction:column; gap:16px;}
-  .gw-session-progress{
-    font-family:var(--font-display); font-weight:900; font-size:16px; color:#fff; text-transform:uppercase;
-  }
-  .gw-session-bar-track{width:100%; height:6px; background:var(--surface); border-radius:3px; overflow:hidden; margin-top:-8px;}
-  .gw-session-bar-fill{height:100%; background:var(--coral); border-radius:3px; transition:width 0.3s ease;}
-  #gw-actions-session{display:flex; flex-direction:column; gap:12px;}
-  .gw-session-nav{display:flex; gap:10px; margin-top:4px;}
-  .gw-session-nav .gw-btn{width:100%; padding:18px;}
-  .gw-session-bottom-row{display:flex; gap:10px; justify-content:space-between; margin-top:4px;}
-  .gw-session-bottom-row .gw-btn{flex:1;}
-
   #gw-log-content, #gw-profile-content{
     background:transparent; padding:0; margin-bottom:20px;
   }
@@ -404,7 +392,6 @@
     <div id="gw-coachnotes"></div>
     <div id="gw-board"></div>
     <div id="gw-actions"></div>
-    <div id="gw-session" style="display:none;"></div>
   </div>
 
   <div id="gw-page-log" class="gw-page" style="display:none;">
@@ -473,7 +460,6 @@ if(!window.storage){
 
 // Phosphor Icons "arrows-clockwise" (regular weight) — used for every reroll/refresh action
 const ICON_REFRESH = '<svg viewBox="0 0 256 256" fill="currentColor" width="16" height="16"><path d="M224,48V96a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h28.69L182.06,73.37a79.56,79.56,0,0,0-56.13-23.43h-.45A79.52,79.52,0,0,0,69.59,72.71,8,8,0,0,1,58.41,61.27a96,96,0,0,1,135,.79L208,76.69V48a8,8,0,0,1,16,0ZM186.41,183.29a80,80,0,0,1-112.47-.66L59.31,168H88a8,8,0,0,0,0-16H40a8,8,0,0,0-8,8v48a8,8,0,0,0,16,0V179.31l14.63,14.63A95.43,95.43,0,0,0,130,222.06h.53a95.36,95.36,0,0,0,67.07-27.33,8,8,0,0,0-11.18-11.44Z"/></svg>';
-const ICON_PLAY = '<svg viewBox="0 0 256 256" fill="currentColor" width="18" height="18"><path d="M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z"/></svg>';
 
 const DAY_TYPES = [
   {key:'strength', label:'Strength'},
@@ -886,8 +872,6 @@ let state = {
   logFilterDate: null,
   showActivityForm: false,
   benchmarks: {},
-  sessionMode: false,
-  sessionStepIndex: 0,
   loaded: false
 };
 
@@ -1209,18 +1193,13 @@ function render(){
     b.title = rec && rec.type===dt.key
       ? (rec.days===null ? "Recommended — you haven't trained this focus yet" : `Recommended today — last trained ${rec.days} day${rec.days===1?'':'s'} ago`)
       : '';
-    b.onclick = ()=>{ state.sessionMode = false; generateWorkout(dt.key); };
+    b.onclick = ()=>{ generateWorkout(dt.key); };
     tabs.appendChild(b);
   });
 
   const board = document.getElementById('gw-board');
   const actions = document.getElementById('gw-actions');
-  const session = document.getElementById('gw-session');
   const w = state.currentWorkout;
-
-  session.style.display = 'none';
-  board.style.display = '';
-  actions.style.display = '';
 
   if(!w){
     const rec = recommendedFocus();
@@ -1234,8 +1213,6 @@ function render(){
     return;
   }
 
-  if(state.sessionMode){ renderSessionStep(); return; }
-
   board.innerHTML = '';
   renderCoachNotes(w.coachNotes);
   ['warmup','skill','wod','core'].forEach(key=>{
@@ -1244,95 +1221,8 @@ function render(){
   });
 
   actions.innerHTML = '';
-  const startBtn = mkBtn('Start Workout', 'gw-primary', startWorkoutSession, ICON_PLAY);
-  startBtn.style.width = '100%';
-  actions.appendChild(startBtn);
-  const startHint = document.createElement('div');
-  startHint.style.cssText = 'width:100%; font-size:11.5px; color:var(--muted); text-align:center; font-weight:700; margin-top:-6px;';
-  startHint.textContent = 'Switches to a focused, one-section-at-a-time view.';
-  actions.appendChild(startHint);
-
   actions.appendChild(mkBtn('Refresh Workout', 'gw-btn', ()=>generateWorkout(w.type), ICON_REFRESH));
   renderRatingAndLogBlock(actions, w, render);
-}
-
-function getSessionSteps(w){
-  const steps = [];
-  if(w.warmup) steps.push('warmup');
-  if(w.skillTplText) steps.push('skill');
-  steps.push('wod');
-  if(w.core) steps.push('core');
-  steps.push('rate');
-  return steps;
-}
-function startWorkoutSession(){
-  if(!state.currentWorkout) return;
-  state.sessionMode = true;
-  state.sessionStepIndex = 0;
-  render();
-}
-function exitWorkoutSession(){
-  state.sessionMode = false;
-  render();
-}
-function renderSessionStep(){
-  const w = state.currentWorkout;
-  if(!w){ exitWorkoutSession(); return; }
-  const steps = getSessionSteps(w);
-  if(state.sessionStepIndex >= steps.length) state.sessionStepIndex = steps.length-1;
-  if(state.sessionStepIndex < 0) state.sessionStepIndex = 0;
-  const currentStep = steps[state.sessionStepIndex];
-
-  document.getElementById('gw-board').style.display = 'none';
-  document.getElementById('gw-actions').style.display = 'none';
-  const session = document.getElementById('gw-session');
-  session.style.display = '';
-  session.innerHTML = '';
-
-  const progress = document.createElement('div');
-  progress.className = 'gw-session-progress';
-  const stepLabel = currentStep==='rate' ? 'Rate & Save' : SECTION_LABELS[currentStep];
-  progress.textContent = `Step ${state.sessionStepIndex+1} of ${steps.length} — ${stepLabel}`;
-  session.appendChild(progress);
-
-  const barTrack = document.createElement('div');
-  barTrack.className = 'gw-session-bar-track';
-  const barFill = document.createElement('div');
-  barFill.className = 'gw-session-bar-fill';
-  barFill.style.width = `${Math.round(((state.sessionStepIndex)/(steps.length-1||1))*100)}%`;
-  barTrack.appendChild(barFill);
-  session.appendChild(barTrack);
-
-  if(currentStep==='rate'){
-    const rateWrap = document.createElement('div');
-    rateWrap.id = 'gw-actions-session';
-    renderRatingAndLogBlock(rateWrap, w, renderSessionStep);
-    session.appendChild(rateWrap);
-  } else {
-    const node = renderSectionNode(currentStep, w, {simple:false});
-    if(node) session.appendChild(node);
-
-    const navRow = document.createElement('div');
-    navRow.className = 'gw-session-nav';
-    const doneLabel = currentStep==='wod' ? 'Mark WOD Complete & Continue' : 'Mark Complete & Continue';
-    navRow.appendChild(mkBtn(doneLabel, 'gw-teal', ()=>{
-      if(!w.sectionsDone) w.sectionsDone = {};
-      w.sectionsDone[currentStep] = true;
-      state.sessionStepIndex++;
-      renderSessionStep();
-    }));
-    session.appendChild(navRow);
-  }
-
-  const bottomRow = document.createElement('div');
-  bottomRow.className = 'gw-session-bottom-row';
-  if(state.sessionStepIndex > 0){
-    const backBtn = mkBtn('← Back', 'gw-btn', ()=>{ state.sessionStepIndex--; renderSessionStep(); });
-    bottomRow.appendChild(backBtn);
-  }
-  const exitBtn = mkBtn('Exit Focused Mode', 'gw-btn', exitWorkoutSession);
-  bottomRow.appendChild(exitBtn);
-  session.appendChild(bottomRow);
 }
 
 function splitHeadline(body){
@@ -1396,9 +1286,7 @@ function sectionWithChips(title, body, tag, opts){
   head.className = 'gw-section-head';
   const titleWrap = document.createElement('span');
   titleWrap.className = 'gw-section-title';
-  const sectionKeyForTitle = {'Warm-Up':'warmup', 'Skill':'skill', 'Extra Core':'core'}[title] || null;
-  const isDone = sectionKeyForTitle && state.currentWorkout && state.currentWorkout.sectionsDone && state.currentWorkout.sectionsDone[sectionKeyForTitle] === true;
-  titleWrap.textContent = (isDone ? '✓ ' : '') + title;
+  titleWrap.textContent = title;
   head.appendChild(titleWrap);
 
   const rightWrap = document.createElement('span');
@@ -1463,8 +1351,7 @@ function renderWodSection(w){
   head.className = 'gw-section-head';
   const titleWrap = document.createElement('span');
   titleWrap.className = 'gw-section-title';
-  const wodDone = w.sectionsDone && w.sectionsDone.wod === true;
-  titleWrap.textContent = (wodDone ? '✓ ' : '') + 'WOD';
+  titleWrap.textContent = 'WOD';
   head.appendChild(titleWrap);
 
   const rightWrap = document.createElement('span');
@@ -2250,17 +2137,6 @@ function timerSubLabel(){
   }
   return timer.cap ? `Counts up — time cap ${timer.cap}'` : 'Stopwatch';
 }
-const SECTION_LABELS = {warmup:'Warm-Up', skill:'Skill', wod:'WOD', core:'Extra Core'};
-function markTimerSectionComplete(){
-  if(!timer || !timer.sectionKey) return;
-  const w = state.currentWorkout;
-  if(!w) return;
-  if(!w.sectionsDone) w.sectionsDone = {};
-  const already = w.sectionsDone[timer.sectionKey] === true;
-  w.sectionsDone[timer.sectionKey] = true;
-  if(!already) toast(`✓ ${SECTION_LABELS[timer.sectionKey] || timer.sectionKey} marked complete.`);
-  if(state.sessionMode) renderSessionStep(); else render();
-}
 function currentElapsed(){
   if(!timer) return 0;
   const running = timer.running ? (performance.now() - timer.startedAt)/1000 : 0;
@@ -2353,7 +2229,6 @@ function finishIfNeeded(){
     timer.running = false;
     beepTriple();
     updateTimerButtonStates();
-    markTimerSectionComplete();
   }
 }
 function timerTick(){
